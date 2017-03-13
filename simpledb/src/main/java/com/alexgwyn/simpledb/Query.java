@@ -2,6 +2,8 @@ package com.alexgwyn.simpledb;
 
 import java.util.ArrayList;
 
+import static android.R.attr.order;
+
 public class Query {
 
     public static final String BOOLEAN_TRUE = "1";
@@ -19,6 +21,7 @@ public class Query {
 
     private ArrayList<Selection> mSelections = new ArrayList<>();
     private Order mOrder;
+    private String mOrderColumn;
     private Integer mLimit;
 
     public Query addSelection(Selection selection) {
@@ -42,7 +45,8 @@ public class Query {
         return this;
     }
 
-    public Query setOrder(Order order) {
+    public Query setOrder(String orderColumn, Order order) {
+        mOrderColumn = orderColumn;
         mOrder = order;
         return this;
     }
@@ -54,6 +58,10 @@ public class Query {
 
     public boolean hasOrder() {
         return mOrder != null;
+    }
+
+    public String getOrderColumn() {
+        return mOrderColumn;
     }
 
     public String getOrder() {

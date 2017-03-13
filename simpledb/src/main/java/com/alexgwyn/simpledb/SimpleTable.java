@@ -26,7 +26,7 @@ public class SimpleTable implements Table<ContentValues> {
     public final ArrayList<ContentValues> get(Query query) {
         Cursor cursor = mDatabase.query(mName, null, query.getWhereClause(), query
                 .getSelectionClause
-                        (), null, null, query.hasOrder() ? query.getOrder() : null, query.hasLimit() ? query.getLimit() :
+                        (), null, null, query.hasOrder() ? query.getOrderColumn() + " " + query.getOrder() : null, query.hasLimit() ? query.getLimit() :
                 null);
         return cursorToContentValuesAndClose(cursor);
     }
@@ -35,7 +35,7 @@ public class SimpleTable implements Table<ContentValues> {
     public final ContentValues getFirst(Query query) {
         Cursor cursor = mDatabase.query(mName, null, query.getWhereClause(), query
                 .getSelectionClause
-                        (), null, null, query.hasOrder() ? query.getOrder() : null, query.hasLimit() ? query.getLimit() :
+                        (), null, null, query.hasOrder() ? query.getOrderColumn() + " " + query.getOrder() : null, query.hasLimit() ? query.getLimit() :
                 null);
         ArrayList<ContentValues> values = cursorToContentValuesAndClose(cursor);
         return values.isEmpty() ? null : values.get(0);
