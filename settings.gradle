@@ -1,1 +1,1 @@
-include ':app', ':simpledb', ':simpledb_gson'
+include ':app', ':simpledb'
