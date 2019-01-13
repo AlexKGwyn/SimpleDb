@@ -1,5 +1,6 @@
-package com.alexgwyn.simpledb;
+package com.alexkgwyn.simpledb;
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.gson.Gson;
@@ -12,9 +13,10 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class GsonTable<T> implements Table<T> {
-
     private JsonTable mJsonTable;
     private Gson mGson;
     private Class<T> mClass;
@@ -40,12 +42,14 @@ public class GsonTable<T> implements Table<T> {
         }
     }
 
-    public GsonTable(String name, SQLiteDatabase database, Class<T> aClass) {
-        this(name, database, aClass, buildGson());
+    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns,
+                     Class<T> aClass) {
+        this(name, database, columns, aClass, buildGson());
     }
 
-    public GsonTable(String name, SQLiteDatabase database, Class<T> aClass, Gson gson) {
-        mJsonTable = new JsonTable(name, database);
+    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns,
+                     Class<T> aClass, Gson gson) {
+        mJsonTable = new JsonTable(name, database, columns);
         mClass = aClass;
         mGson = gson;
     }
@@ -89,6 +93,16 @@ public class GsonTable<T> implements Table<T> {
         return mJsonTable.update(element.getAsJsonObject(), query);
     }
 
+    public long update(T object) {
+        JsonElement element = mGson.toJsonTree(object);
+        return mJsonTable.update(element.getAsJsonObject());
+    }
+
+    @Override
+    public long updateValues(ContentValues values, Query query) {
+        return mJsonTable.updateValues(values, query);
+    }
+
     public long insertOrUpdate(T object, Query query) {
         JsonElement element = mGson.toJsonTree(object);
         return mJsonTable.insertOrUpdate(element.getAsJsonObject(), query);
@@ -102,5 +116,15 @@ public class GsonTable<T> implements Table<T> {
     public long replace(T object) {
         JsonElement element = mGson.toJsonTree(object);
         return mJsonTable.replace(element.getAsJsonObject());
+    }
+
+    @Override
+    public HashMap<String, TableBuilder.ColumnInfo> getColumns() {
+        return mJsonTable.getColumns();
+    }
+
+    @Override
+    public TableBuilder.ColumnInfo getColumnInfo(String name) {
+        return mJsonTable.getColumnInfo(name);
     }
 }

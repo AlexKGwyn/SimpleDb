@@ -1,8 +1,8 @@
-package com.alexgwyn.simpledb;
+package com.alexkgwyn.simpledb;
+
+import android.util.Pair;
 
 import java.util.ArrayList;
-
-import static android.R.attr.order;
 
 public class Query {
 
@@ -20,8 +20,7 @@ public class Query {
     }
 
     private ArrayList<Selection> mSelections = new ArrayList<>();
-    private Order mOrder;
-    private String mOrderColumn;
+    private ArrayList<Pair<String, Order>> mOrders = new ArrayList<>();
     private Integer mLimit;
 
     public Query addSelection(Selection selection) {
@@ -39,15 +38,13 @@ public class Query {
         return this;
     }
 
-
     public Query addSelection(String column, Selection.Operator operator, Object value) {
         addSelection(new Selection(column, operator, value.toString()));
         return this;
     }
 
-    public Query setOrder(String orderColumn, Order order) {
-        mOrderColumn = orderColumn;
-        mOrder = order;
+    public Query orderBy(String column, Order order) {
+        mOrders.add(new Pair<>(column, order));
         return this;
     }
 
@@ -57,15 +54,7 @@ public class Query {
     }
 
     public boolean hasOrder() {
-        return mOrder != null;
-    }
-
-    public String getOrderColumn() {
-        return mOrderColumn;
-    }
-
-    public String getOrder() {
-        return mOrder.sql;
+        return !mOrders.isEmpty();
     }
 
     public boolean hasLimit() {
@@ -90,6 +79,20 @@ public class Query {
         return builder.toString();
     }
 
+    public String getOrder() {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (Pair<String, Order> order : mOrders) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(" ");
+            }
+            builder.append(order.first).append(" ").append(order.second.sql);
+        }
+        return builder.toString();
+    }
+
     public String[] getSelectionClause() {
         String[] selections = new String[mSelections.size()];
         for (int i = 0; i < mSelections.size(); i++) {
@@ -98,4 +101,5 @@ public class Query {
         }
         return selections;
     }
+
 }

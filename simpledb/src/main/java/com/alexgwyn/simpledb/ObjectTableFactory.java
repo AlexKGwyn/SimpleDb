@@ -1,6 +1,8 @@
-package com.alexgwyn.simpledb;
+package com.alexkgwyn.simpledb;
 
 import android.database.sqlite.SQLiteDatabase;
+
+import java.util.LinkedHashMap;
 
 public class ObjectTableFactory<T> extends TableFactory<GsonTable<T>> {
     private Class<T> mClass;
@@ -10,7 +12,8 @@ public class ObjectTableFactory<T> extends TableFactory<GsonTable<T>> {
     }
 
     @Override
-    public GsonTable<T> buildTable(String name, SQLiteDatabase database) {
-        return new GsonTable<T>(name, database, mClass);
+    public GsonTable<T> buildTable(String name, LinkedHashMap<String, TableBuilder.ColumnInfo> columns, SQLiteDatabase
+            database) {
+        return new GsonTable<T>(name, database, columns, mClass);
     }
 }

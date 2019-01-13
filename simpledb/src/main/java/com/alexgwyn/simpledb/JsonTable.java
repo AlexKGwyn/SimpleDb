@@ -1,21 +1,24 @@
-package com.alexgwyn.simpledb;
+package com.alexkgwyn.simpledb;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class JsonTable implements Table<JsonObject> {
 
     private SimpleTable mSimpleTable;
-
-    public JsonTable(String name, SQLiteDatabase database) {
-        mSimpleTable = new SimpleTable(name, database);
+    private JsonParser mJsonParser = new JsonParser();
+    public JsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns) {
+        mSimpleTable = new SimpleTable(name, database, columns);
     }
 
     public ArrayList<JsonObject> getAll() {
@@ -56,6 +59,15 @@ public class JsonTable implements Table<JsonObject> {
         return mSimpleTable.update(fromJsonObject(object), query);
     }
 
+    public long update(JsonObject object) {
+        return mSimpleTable.update(fromJsonObject(object));
+    }
+
+    @Override
+    public long updateValues(ContentValues values, Query query) {
+        return mSimpleTable.updateValues(values, query);
+    }
+
     public long insertOrUpdate(JsonObject object, Query query) {
         return mSimpleTable.insertOrUpdate(fromJsonObject(object), query);
     }
@@ -67,6 +79,16 @@ public class JsonTable implements Table<JsonObject> {
 
     public long replace(JsonObject object) {
         return mSimpleTable.replace(fromJsonObject(object));
+    }
+
+    @Override
+    public HashMap<String, TableBuilder.ColumnInfo> getColumns() {
+        return mSimpleTable.getColumns();
+    }
+
+    @Override
+    public TableBuilder.ColumnInfo getColumnInfo(String name) {
+        return mSimpleTable.getColumnInfo(name);
     }
 
     private ContentValues fromJsonObject(JsonObject object) {
@@ -87,25 +109,32 @@ public class JsonTable implements Table<JsonObject> {
                     values.put(entry.getKey(), primitive.getAsString());
                 }
             }
+            else {
+                values.put(entry.getKey(), entry.getValue().toString());
+            }
         return values;
     }
 
     private JsonObject toJsonObject(ContentValues values) {
         JsonObject jsonObject = new JsonObject();
         for (Map.Entry<String, Object> entry : values.valueSet()) {
-            JsonPrimitive primitive = null;
+            JsonElement element = null;
             Object object = entry.getValue();
             if (object instanceof Number) {
-                primitive = new JsonPrimitive((Number) object);
+                element = new JsonPrimitive((Number) object);
             } else if (object instanceof Boolean) {
-                primitive = new JsonPrimitive((Boolean) object);
+                element = new JsonPrimitive((Boolean) object);
             } else if (object instanceof String) {
-                primitive = new JsonPrimitive((String) object);
+                if (getColumnInfo(entry.getKey()).getType() == TableBuilder.Type.JSON) {
+                    element = mJsonParser.parse((String) object);
+                } else {
+                    element = new JsonPrimitive((String) object);
+                }
             } else if (object instanceof Character) {
-                primitive = new JsonPrimitive((Character) object);
+                element = new JsonPrimitive((Character) object);
             }
-            if (primitive != null) {
-                jsonObject.add(entry.getKey(), primitive);
+            if (element != null) {
+                jsonObject.add(entry.getKey(), element);
             }
         }
         return jsonObject;

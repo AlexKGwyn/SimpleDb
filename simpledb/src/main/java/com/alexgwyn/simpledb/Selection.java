@@ -1,4 +1,4 @@
-package com.alexgwyn.simpledb;
+package com.alexkgwyn.simpledb;
 
 public class Selection {
 
