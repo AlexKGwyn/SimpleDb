@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-interface Table<T> {
+public interface Table<T> {
     ArrayList<T> getAll();
 
     ArrayList<T> get(Query query);
