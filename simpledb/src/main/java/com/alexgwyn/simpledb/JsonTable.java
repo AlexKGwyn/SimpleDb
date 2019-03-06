@@ -1,4 +1,4 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,7 +17,7 @@ public class JsonTable implements Table<JsonObject> {
 
     private SimpleTable mSimpleTable;
     private JsonParser mJsonParser = new JsonParser();
-    public JsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns) {
+    public JsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, ColumnInfo> columns) {
         mSimpleTable = new SimpleTable(name, database, columns);
     }
 
@@ -82,12 +82,12 @@ public class JsonTable implements Table<JsonObject> {
     }
 
     @Override
-    public HashMap<String, TableBuilder.ColumnInfo> getColumns() {
+    public HashMap<String, ColumnInfo> getColumns() {
         return mSimpleTable.getColumns();
     }
 
     @Override
-    public TableBuilder.ColumnInfo getColumnInfo(String name) {
+    public ColumnInfo getColumnInfo(String name) {
         return mSimpleTable.getColumnInfo(name);
     }
 
@@ -125,7 +125,7 @@ public class JsonTable implements Table<JsonObject> {
             } else if (object instanceof Boolean) {
                 element = new JsonPrimitive((Boolean) object);
             } else if (object instanceof String) {
-                if (getColumnInfo(entry.getKey()).getType() == TableBuilder.Type.JSON) {
+                if (getColumnInfo(entry.getKey()).getType() == Type.JSON) {
                     element = mJsonParser.parse((String) object);
                 } else {
                     element = new JsonPrimitive((String) object);

@@ -1,4 +1,4 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.HashMap;
 
 public abstract class SimpleDb<T extends Table> extends SQLiteOpenHelper {
-    private HashMap<String, TableBuilder<T>> mTableMap = new HashMap<>();
+    private HashMap<String, QueryableBuilder<T>> mQueryableMap = new HashMap<>();
 
     public SimpleDb(Context context, String name, int version) {
         super(context, name, null, version);
@@ -17,7 +17,7 @@ public abstract class SimpleDb<T extends Table> extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         TableBuilder[] tableBuilders = getTableBuilders();
         for (TableBuilder tableBuilder : tableBuilders) {
-            mTableMap.put(tableBuilder.getName(), tableBuilder);
+            mQueryableMap.put(tableBuilder.getName(), tableBuilder);
             sqLiteDatabase.execSQL(tableBuilder.toSqlString());
         }
     }
@@ -29,13 +29,13 @@ public abstract class SimpleDb<T extends Table> extends SQLiteOpenHelper {
     }
 
     protected T getTable(String name, SQLiteDatabase database) {
-        if (mTableMap.isEmpty()) {
+        if (mQueryableMap.isEmpty()) {
             TableBuilder[] tableBuilders = getTableBuilders();
             for (TableBuilder tableBuilder : tableBuilders) {
-                mTableMap.put(tableBuilder.getName(), tableBuilder);
+                mQueryableMap.put(tableBuilder.getName(), tableBuilder);
             }
         }
-        return mTableMap.get(name).getTable(database);
+        return mQueryableMap.get(name).get(database);
     }
 
     @Override

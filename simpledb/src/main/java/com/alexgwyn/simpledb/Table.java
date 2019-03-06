@@ -1,17 +1,10 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.content.ContentValues;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface Table<T> {
-    ArrayList<T> getAll();
-
-    ArrayList<T> get(Query query);
-
-    T getFirst(Query query);
-
+public interface Table<T> extends Queryable<T> {
     long insert(T values);
 
     long insert(T values, ConflictMode mode);
@@ -28,7 +21,7 @@ public interface Table<T> {
 
     long replace(T values);
 
-    HashMap<String, TableBuilder.ColumnInfo> getColumns();
+    HashMap<String, ColumnInfo> getColumns();
 
-    TableBuilder.ColumnInfo getColumnInfo(String name);
+    ColumnInfo getColumnInfo(String name);
 }

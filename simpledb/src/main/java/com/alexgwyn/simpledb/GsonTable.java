@@ -1,4 +1,4 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -42,12 +42,12 @@ public class GsonTable<T> implements Table<T> {
         }
     }
 
-    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns,
+    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, ColumnInfo> columns,
                      Class<T> aClass) {
         this(name, database, columns, aClass, buildGson());
     }
 
-    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns,
+    public GsonTable(String name, SQLiteDatabase database, LinkedHashMap<String, ColumnInfo> columns,
                      Class<T> aClass, Gson gson) {
         mJsonTable = new JsonTable(name, database, columns);
         mClass = aClass;
@@ -119,12 +119,12 @@ public class GsonTable<T> implements Table<T> {
     }
 
     @Override
-    public HashMap<String, TableBuilder.ColumnInfo> getColumns() {
+    public HashMap<String, ColumnInfo> getColumns() {
         return mJsonTable.getColumns();
     }
 
     @Override
-    public TableBuilder.ColumnInfo getColumnInfo(String name) {
+    public ColumnInfo getColumnInfo(String name) {
         return mJsonTable.getColumnInfo(name);
     }
 }

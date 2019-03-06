@@ -1,4 +1,4 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.database.sqlite.SQLiteDatabase;
 

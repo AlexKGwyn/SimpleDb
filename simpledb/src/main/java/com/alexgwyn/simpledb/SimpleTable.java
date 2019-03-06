@@ -1,4 +1,4 @@
-package com.alexkgwyn.simpledb;
+package com.alexgwyn.simpledb;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -13,9 +13,9 @@ import java.util.Map;
 public class SimpleTable implements Table<ContentValues> {
     private String mName;
     private SQLiteDatabase mDatabase;
-    private LinkedHashMap<String, TableBuilder.ColumnInfo> mColumns;
+    private LinkedHashMap<String, ColumnInfo> mColumns;
 
-    public SimpleTable(String name, SQLiteDatabase database, LinkedHashMap<String, TableBuilder.ColumnInfo> columns) {
+    public SimpleTable(String name, SQLiteDatabase database, LinkedHashMap<String, ColumnInfo> columns) {
         mName = name;
         mDatabase = database;
         mColumns = columns;
@@ -32,7 +32,7 @@ public class SimpleTable implements Table<ContentValues> {
         Cursor cursor = mDatabase.query(mName, null, query.getWhereClause(), query
                 .getSelectionClause
                         (), null, null, query.hasOrder() ? query.getOrder() : null, query.hasLimit() ? query.getLimit() :
-                null);
+                                                null);
         return cursorToContentValuesAndClose(cursor);
     }
 
@@ -64,14 +64,14 @@ public class SimpleTable implements Table<ContentValues> {
     public long update(ContentValues values) {
         Query query = new Query();
         boolean valid = false;
-        for (Map.Entry<String, TableBuilder.ColumnInfo> entry : mColumns.entrySet()) {
-            if (entry.getValue().hasProperty(TableBuilder.Property.PRIMARY_KEY)) {
+        for (Map.Entry<String, ColumnInfo> entry : mColumns.entrySet()) {
+            if (entry.getValue().hasProperty(Property.PRIMARY_KEY)) {
                 query.addSelection(entry.getKey(), Selection.Operator.EQUAL, values.get(entry.getKey()));
                 valid = values.containsKey(entry.getKey());
             }
         }
         if (!valid) {
-            throw new IllegalStateException("Primary key must be defined for simple update: "+values.toString());
+            throw new IllegalStateException("Primary key must be defined for simple update: " + values.toString());
         }
         return mDatabase.update(mName, values, query.getWhereClause(), query.getSelectionClause());
     }
@@ -101,12 +101,12 @@ public class SimpleTable implements Table<ContentValues> {
     }
 
     @Override
-    public HashMap<String, TableBuilder.ColumnInfo> getColumns() {
+    public HashMap<String, ColumnInfo> getColumns() {
         return mColumns;
     }
 
     @Override
-    public TableBuilder.ColumnInfo getColumnInfo(String name) {
+    public ColumnInfo getColumnInfo(String name) {
         return mColumns.get(name);
     }
 
@@ -125,8 +125,8 @@ public class SimpleTable implements Table<ContentValues> {
 
     private ContentValues removeAutoValues(ContentValues values) {
         ArrayList<String> removal = new ArrayList<>();
-        for (Map.Entry<String, TableBuilder.ColumnInfo> entry : mColumns.entrySet()) {
-            if (entry.getValue().hasProperty(TableBuilder.Property.AUTO_INCREMENT)) {
+        for (Map.Entry<String, ColumnInfo> entry : mColumns.entrySet()) {
+            if (entry.getValue().hasProperty(Property.AUTO_INCREMENT)) {
                 removal.add(entry.getKey());
             }
         }
@@ -135,5 +135,4 @@ public class SimpleTable implements Table<ContentValues> {
         }
         return values;
     }
-
 }
